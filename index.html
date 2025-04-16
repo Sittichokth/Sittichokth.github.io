@@ -6,7 +6,46 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
- <script>alert("นี่คือการทดสอบระบบของ Sitthichokthq"); </script>
+
+  <script>
+    let countdown = 10;
+    let countdownInterval;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const alertBox = document.getElementById('autoAlert');
+      const countdownText = document.getElementById('countdownText');
+
+      alertBox.classList.remove('hidden');
+
+      countdownInterval = setInterval(() => {
+        countdown--;
+        countdownText.innerText = `หน้าต่างนี้จะปิดใน ${countdown} วินาที`;
+        if (countdown <= 0) {
+          closeWarningalModal();
+        }
+      }, 1000);
+    });
+
+    function closeWarningalModal() {
+      const alertBox = document.getElementById('autoAlert');
+      alertBox.classList.add('hidden');
+      clearInterval(countdownInterval);
+    }
+  </script>
+ <!-- Popup Alert (กลางจอ) -->
+  <div id="autoAlert" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-blue-100 border border-blue-300 text-blue-800 px-6 py-6 rounded-lg shadow-md text-center w-[90%] max-w-md">
+      <h2 class="text-xl font-bold mb-2">ประกาศ:</h2>
+      <p class="mb-1">ระบบส่วนนี้อยู่ในขั้นตอนการพัฒนา</p>
+      <p class="text-sm text-gray-500 mb-4">@Sitthichokthq</p>
+      <p class="text-sm text-gray-600 mb-3" id="countdownText">หน้าต่างนี้จะปิดใน 10 วินาที</p>
+      <button onclick="closeWarningalModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+
+
   <!-- หน้าแรก: ฟอร์มกรอกข้อมูล -->
   <div id="formSection" class="flex flex-col items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
