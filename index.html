@@ -4,8 +4,37 @@
   <meta charset="UTF-8">
   <title>ระบบข้อสอบคณิตศาสตร์</title>
   <script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .fade-in {
+      animation: fadeIn 3s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
+
+<!-- Popup Alert (กลางจอ) -->
+  <div id="autoAlert" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div id="popupContent" class="bg-blue-100 border border-blue-300 text-blue-800 px-6 py-6 rounded-lg shadow-md text-center w-[90%] max-w-md opacity-0">
+      <h2 class="text-xl font-bold mb-2">ประกาศ:</h2>
+      <p class="mb-1">ระบบส่วนนี้อยู่ในขั้นตอนการพัฒนา</p>
+      <p class="text-sm text-gray-500 mb-4">@Sitthichokthq</p>
+      <p class="text-sm text-gray-600 mb-3" id="countdownText">หน้าต่างนี้จะปิดใน 10 วินาที</p>
+      <button onclick="closeWarningalModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
 
   <script>
     let countdown = 10;
@@ -13,9 +42,11 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const alertBox = document.getElementById('autoAlert');
+      const popupContent = document.getElementById('popupContent');
       const countdownText = document.getElementById('countdownText');
 
       alertBox.classList.remove('hidden');
+      popupContent.classList.add('fade-in');
 
       countdownInterval = setInterval(() => {
         countdown--;
@@ -32,18 +63,6 @@
       clearInterval(countdownInterval);
     }
   </script>
- <!-- Popup Alert (กลางจอ) -->
-  <div id="autoAlert" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-    <div class="bg-blue-100 border border-blue-300 text-blue-800 px-6 py-6 rounded-lg shadow-md text-center w-[90%] max-w-md">
-      <h2 class="text-xl font-bold mb-2">ประกาศ:</h2>
-      <p class="mb-1">ระบบส่วนนี้อยู่ในขั้นตอนการพัฒนา</p>
-      <p class="text-sm text-gray-500 mb-4">@Sitthichokthq</p>
-      <p class="text-sm text-gray-600 mb-3" id="countdownText">หน้าต่างนี้จะปิดใน 10 วินาที</p>
-      <button onclick="closeWarningalModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
-        ปิดหน้าต่าง
-      </button>
-    </div>
-  </div>
 
 
   <!-- หน้าแรก: ฟอร์มกรอกข้อมูล -->
