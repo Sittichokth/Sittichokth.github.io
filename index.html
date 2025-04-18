@@ -1,216 +1,182 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>ระบบข้อสอบคณิตศาสตร์</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ระบบแบบทดสอบ</title>
   <script src="https://cdn.tailwindcss.com"></script>
-<style>
-    .fade-in {
-      animation: fadeIn 3s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+  <style>
+    .question label.text-green-600 {
+      background-color: #e6fffa;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      display: inline-block;
     }
   </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-800">
 
-<!-- Popup Alert (กลางจอ) -->
-  <div id="autoAlert" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-    <div id="popupContent" class="bg-blue-100 border border-blue-300 text-blue-800 px-6 py-6 rounded-lg shadow-md text-center w-[90%] max-w-md opacity-0">
-      <h2 class="text-xl font-bold mb-2">ประกาศ:</h2>
-      <p class="mb-1">ระบบส่วนนี้อยู่ในขั้นตอนการพัฒนา</p>
-      <p class="text-sm text-gray-500 mb-4">@Sitthichokthq</p>
-      <p class="text-sm text-gray-600 mb-3" id="countdownText">หน้าต่างนี้จะปิดใน 10 วินาที</p>
-      <button onclick="closeWarningalModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
-        ปิดหน้าต่าง
-      </button>
-    </div>
-  </div>
+  <!-- Section: ฟอร์มกรอกชื่อ -->
+  <section id="formSection" class="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
+    <h1 class="text-xl font-bold mb-4">เข้าสู่ระบบก่อนทำแบบทดสอบ</h1>
+    <input type="text" id="name" placeholder="ชื่อ" class="block w-full mb-3 p-2 border rounded" />
+    <input type="text" id="lastname" placeholder="นามสกุล" class="block w-full mb-3 p-2 border rounded" />
+    <input type="tel" id="tel" placeholder="เบอร์โทรศัพท์" class="block w-full mb-3 p-2 border rounded" />
+    <button onclick="startQuiz()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">เริ่มทำแบบทดสอบ</button>
+  </section>
 
-  <script>
-    let countdown = 10;
-    let countdownInterval;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const alertBox = document.getElementById('autoAlert');
-      const popupContent = document.getElementById('popupContent');
-      const countdownText = document.getElementById('countdownText');
-
-      alertBox.classList.remove('hidden');
-      popupContent.classList.add('fade-in');
-
-      countdownInterval = setInterval(() => {
-        countdown--;
-        countdownText.innerText = `หน้าต่างนี้จะปิดใน ${countdown} วินาที`;
-        if (countdown <= 0) {
-          closeWarningalModal();
-        }
-      }, 1000);
-    });
-
-    function closeWarningalModal() {
-      const alertBox = document.getElementById('autoAlert');
-      alertBox.classList.add('hidden');
-      clearInterval(countdownInterval);
-    }
-  </script>
-
-
-  <!-- หน้าแรก: ฟอร์มกรอกข้อมูล -->
-  <div id="formSection" class="flex flex-col items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-      <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">กรอกข้อมูลเพื่อเริ่มทำข้อสอบ</h2>
-      <div class="space-y-4">
-        <input id="name" type="text" placeholder="ชื่อ-นามสกุล" class="w-full px-4 py-2 border rounded" />
-        <input id="class" type="text" placeholder="ชั้น" class="w-full px-4 py-2 border rounded" />
-        <input id="room" type="text" placeholder="ห้อง" class="w-full px-4 py-2 border rounded" />
-        <input id="number" type="text" placeholder="เลขที่" class="w-full px-4 py-2 border rounded" />
-        <input id="studentId" type="text" placeholder="เลขประจำตัวนักเรียน" class="w-full px-4 py-2 border rounded" />
-      </div>
-      <button onclick="startQuiz()" class="w-full mt-6 bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">
-        เริ่มทำข้อสอบ
-      </button>
-    </div>
-  </div>
-
-  <!-- ส่วนข้อสอบ -->
-  <div id="quizSection" class="hidden max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8 mt-10">
-    <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">ข้อสอบคณิตศาสตร์</h1>
-    <form id="quizForm" class="space-y-6">
+  <!-- Section: แบบทดสอบ -->
+  <section id="quizSection" class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow hidden">
+    <h2 class="text-xl font-bold mb-4">แบบทดสอบ</h2>
+    <div class="space-y-6">
       <!-- โจทย์ -->
-      <div class="question" data-answer="30">
-        <p class="font-semibold">1. 5 × 6 = ?</p>
-        <label><input type="radio" name="q1" value="30" class="mr-2">30</label><br>
-        <label><input type="radio" name="q1" value="35" class="mr-2">35</label><br>
-        <label><input type="radio" name="q1" value="40" class="mr-2">40</label>
+      <div class="question" data-answer="ควาย">
+        <p class="font-semibold">1. ซินคือตัวไร?</p>
+        <label><input type="radio" name="q1" value="ควาย" class="mr-2">ควาย</label><br>
+        <label><input type="radio" name="q1" value="คน" class="mr-2">คน</label><br>
+        <label><input type="radio" name="q1" value="ลิง" class="mr-2">ลิง</label>
       </div>
 
-      <div class="question" data-answer="2/4">
-        <p class="font-semibold">2. เศษส่วนใดเท่ากับ ½?</p>
-        <label><input type="radio" name="q2" value="2/4" class="mr-2">2/4</label><br>
-        <label><input type="radio" name="q2" value="3/5" class="mr-2">3/5</label><br>
-        <label><input type="radio" name="q2" value="4/6" class="mr-2">4/6</label>
+      <div class="question" data-answer="ต้าวอ้วน">
+        <p class="font-semibold">2. ฉายาเสี่ยภูมิคือ?</p>
+        <label><input type="radio" name="q2" value="เจ้าพ่อมือถือ" class="mr-2">เจ้าพ่อมือถือ</label><br>
+        <label><input type="radio" name="q2" value="แฟนน้องเลย" class="mr-2">แฟนน้องเนย</label><br>
+        <label><input type="radio" name="q2" value="ต้าวอ้วน" class="mr-2">ต้าวอ้วน</label>
       </div>
 
-      <div class="question" data-answer="81">
-        <p class="font-semibold">3. คำตอบของ 9² คือ?</p>
-        <label><input type="radio" name="q3" value="81" class="mr-2">81</label><br>
-        <label><input type="radio" name="q3" value="18" class="mr-2">18</label><br>
-        <label><input type="radio" name="q3" value="72" class="mr-2">72</label>
+      <div class="question" data-answer="เมย์">
+        <p class="font-semibold">3. ใครชอบหนุ่มวาโร?</p>
+        <label><input type="radio" name="q3" value="ภูมิ" class="mr-2">ภูมิ</label><br>
+        <label><input type="radio" name="q3" value="เมย์" class="mr-2">เมย์</label><br>
+        <label><input type="radio" name="q3" value="กัส" class="mr-2">กัส</label>
       </div>
 
-      <div class="question" data-answer="9">
-        <p class="font-semibold">4. ถ้า x = 4 แล้ว 2x + 1 = ?</p>
-        <label><input type="radio" name="q4" value="6" class="mr-2">6</label><br>
-        <label><input type="radio" name="q4" value="7" class="mr-2">7</label><br>
-        <label><input type="radio" name="q4" value="9" class="mr-2">9</label>
+      <div class="question" data-answer="ไปไกลๆกูไป">
+        <p class="font-semibold">4. ถ้าเห็นกัสเดินกับแฟนเราควรพูดว่าไร?</p>
+        <label><input type="radio" name="q4" value="ไปไกลๆกูไป" class="mr-2">ไปไกลๆกูไป</label><br>
+        <label><input type="radio" name="q4" value="ไปด้วยดิ" class="mr-2">ไปด้วยดิ</label><br>
+        <label><input type="radio" name="q4" value="ไปไหน" class="mr-2">ไปไหน</label>
       </div>
 
       <div class="question" data-answer="7">
-        <p class="font-semibold">5. รากที่สองของ 49 คือ?</p>
+        <p class="font-semibold">5. รากที่สองของ 49 คือ? (แถม)</p>
         <label><input type="radio" name="q5" value="7" class="mr-2">7</label><br>
         <label><input type="radio" name="q5" value="14" class="mr-2">14</label><br>
         <label><input type="radio" name="q5" value="6" class="mr-2">6</label>
       </div>
 
-      <!-- ปุ่มส่ง -->
-      <button type="button" onclick="checkAnswers()" class="w-full mt-4 bg-green-500 text-white font-semibold py-2 rounded-lg hover:bg-green-600 transition">
-        ส่งคำตอบ
-      </button>
-    </form>
-  </div>
+    </div>
+    <div class="flex flex-col gap-3 mt-4">
+  <button id="submitBtn" type="button" onclick="checkAnswers()" class="bg-green-500 text-white font-semibold py-2 rounded-lg hover:bg-green-600 transition">
+    ส่งคำตอบ
+  </button>
+  
+  <button id="backBtn" onclick="goToHome()" class="hidden bg-gray-500 text-white font-semibold py-2 rounded-lg hover:bg-gray-600 transition">
+    ย้อนกลับหน้าแรก
+  </button>
+</div>
+  </section>
 
-  <!-- MODAL: ผลสอบ -->
-  <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl p-6 w-[90%] max-w-md text-center">
-      <h2 class="text-xl font-bold text-green-600 mb-4">ผลสอบของคุณ</h2>
-      <p id="modalName" class="mb-1"></p>
-      <p id="modalScore" class="mb-1"></p>
-      <p id="modalStatus" class="mb-1"></p>
-      <p id="modalDate" class="text-sm text-gray-500 mb-4"></p>
-      <button onclick="closeModal()" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">ปิดหน้าต่าง</button>
+  <!-- Modal: แสดงผล -->
+  <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded max-w-md text-center space-y-2">
+      <h3 class="text-xl font-bold">ผลการทดสอบ</h3>
+      <p id="modalName"></p>
+      <p id="modalTel"></p>
+      <p id="modalScore"></p>
+      <p id="modalStatus"></p>
+      <p id="modalDate"></p>
+      <button onclick="location.reload()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ทำอีกครั้ง</button>
+<!-- ปุ่มปิด Modal -->
+    <button onclick="closeResultModal()" class="mt-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-red-500">
+      ปิดหน้าต่างนี้
+    </button>
     </div>
   </div>
 
-  <!-- MODAL: แจ้งเตือน -->
-  <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl p-6 w-[90%] max-w-sm text-center">
-      <h2 class="text-lg font-bold text-red-600 mb-3">กรอกข้อมูลไม่ครบ</h2>
-      <p class="text-sm text-gray-700 mb-4">กรุณากรอกข้อมูลให้ครบก่อนเริ่มทำข้อสอบ</p>
-      <button onclick="closeWarningModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">ปิดหน้าต่าง</button>
+  <!-- Modal: แจ้งเตือน -->
+  <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-4 rounded shadow text-center">
+      <p class="mb-4">กรุณากรอกข้อมูลให้ครบถ้วน</p>
+      <button onclick="document.getElementById('warningModal').classList.add('hidden')" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">ปิด</button>
     </div>
   </div>
 
-  <!-- SCRIPT -->
   <script>
     let studentData = {};
+    let startTime, endTime;
 
     function startQuiz() {
       const name = document.getElementById('name').value.trim();
-      const className = document.getElementById('class').value.trim();
-      const room = document.getElementById('room').value.trim();
-      const number = document.getElementById('number').value.trim();
-      const studentId = document.getElementById('studentId').value.trim();
+      const lastName = document.getElementById('lastname').value.trim();
+      const tel = document.getElementById('tel').value.trim();
 
-      if (!name || !className || !room || !number || !studentId) {
+      if (!name || !lastName || !tel) {
         document.getElementById('warningModal').classList.remove('hidden');
         return;
       }
 
-      studentData = { name, className, room, number, studentId };
+      studentData = { name, lastName, tel };
+      startTime = new Date(); // เริ่มจับเวลา
 
       document.getElementById('formSection').classList.add('hidden');
       document.getElementById('quizSection').classList.remove('hidden');
     }
 
     function checkAnswers() {
-      let score = 0;
-      const questions = document.querySelectorAll('.question');
+  let score = 0;
+  const questions = document.querySelectorAll('.question');
 
-      questions.forEach((q) => {
-        q.classList.remove('border', 'border-red-500', 'border-green-500', 'rounded-md', 'p-4');
-        const answer = q.getAttribute('data-answer');
-        const selected = q.querySelector('input[type="radio"]:checked');
+  questions.forEach((q) => {
+    q.classList.remove('border', 'border-red-500', 'border-green-500', 'rounded-md', 'p-4');
+    const answer = q.getAttribute('data-answer');
+    const selected = q.querySelector('input[type="radio"]:checked');
 
-        if (selected) {
-          if (selected.value === answer) {
-            score++;
-            q.classList.add('border', 'border-green-500', 'rounded-md', 'p-4');
-          } else {
-            q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
-          }
-        } else {
-          q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
-        }
-      });
+    // ล็อกทุก radio หลังส่ง
+    const radios = q.querySelectorAll('input[type="radio"]');
+    radios.forEach(r => r.disabled = true);
 
-      const date = new Date().toLocaleDateString('th-TH');
-      const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
-
-      document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name} (${studentData.className}/${studentData.room}) เลขที่ ${studentData.number} เลขประจำตัว ${studentData.studentId}`;
-      document.getElementById('modalScore').innerText = `คะแนน: ${score} / 5`;
-      document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
-      document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
-
-      document.getElementById('resultModal').classList.remove('hidden');
+    if (selected) {
+      if (selected.value === answer) {
+        score++;
+        q.classList.add('border', 'border-green-500', 'rounded-md', 'p-4');
+      } else {
+        q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
+      }
+    } else {
+      q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
     }
 
-    function closeModal() {
-      document.getElementById('resultModal').classList.add('hidden');
-    }
+    // แสดงคำตอบที่ถูก (เพิ่มด้านล่างคำถาม)
+    const answerEl = document.createElement("p");
+    answerEl.className = "text-sm text-green-600 mt-1";
+    answerEl.innerText = `คำตอบที่ถูก: ${answer}`;
+    q.appendChild(answerEl);
+  });
 
-    function closeWarningModal() {
-      document.getElementById('warningModal').classList.add('hidden');
-    }
+  // แสดงผลคะแนน
+  const date = new Date().toLocaleDateString('th-TH');
+  const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
+
+  document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name}  ${studentData.lastName}`;
+  document.getElementById('modalTel').innerText = `เบอร์โทร: ${studentData.tel}`;
+  document.getElementById('modalScore').innerText = `คะแนน: ${score} / 5`;
+  document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
+  document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
+
+  // ซ่อนปุ่มส่ง & แสดงปุ่มย้อนกลับ
+  document.getElementById('submitBtn').classList.add('hidden');
+  document.getElementById('backBtn').classList.remove('hidden');
+
+  // เปิด modal ผลสอบ
+  document.getElementById('resultModal').classList.remove('hidden');
+}
+function closeResultModal() {
+  document.getElementById('resultModal').classList.add('hidden');
+}
+function goToHome() {
+  location.reload(); // รีหน้าเพื่อกลับไปหน้าแรก
+}
   </script>
 </body>
 </html>
