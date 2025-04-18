@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
@@ -13,6 +13,7 @@
       display: inline-block;
     }
   </style>
+
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -103,80 +104,103 @@
   </div>
 
   <script>
-    let studentData = {};
-    let startTime, endTime;
+   
+  let studentData = {};
+  let startTime, endTime;
 
-    function startQuiz() {
-      const name = document.getElementById('name').value.trim();
-      const lastName = document.getElementById('lastname').value.trim();
-      const tel = document.getElementById('tel').value.trim();
+  function startQuiz() {
+    const name = document.getElementById('name').value.trim();
+    const lastName = document.getElementById('lastname').value.trim();
+    const tel = document.getElementById('tel').value.trim();
 
-      if (!name || !lastName || !tel) {
-        document.getElementById('warningModal').classList.remove('hidden');
-        return;
-      }
-
-      studentData = { name, lastName, tel };
-      startTime = new Date(); // เริ่มจับเวลา
-
-      document.getElementById('formSection').classList.add('hidden');
-      document.getElementById('quizSection').classList.remove('hidden');
+    if (!name || !lastName || !tel) {
+      document.getElementById('warningModal').classList.remove('hidden');
+      return;
     }
 
-    function checkAnswers() {
-  let score = 0;
-  const questions = document.querySelectorAll('.question');
+    studentData = { name, lastName, tel };
+    startTime = new Date();
 
-  questions.forEach((q) => {
-    q.classList.remove('border', 'border-red-500', 'border-green-500', 'rounded-md', 'p-4');
-    const answer = q.getAttribute('data-answer');
-    const selected = q.querySelector('input[type="radio"]:checked');
+    document.getElementById('formSection').classList.add('hidden');
+    document.getElementById('quizSection').classList.remove('hidden');
+  }
 
-    // ล็อกทุก radio หลังส่ง
-    const radios = q.querySelectorAll('input[type="radio"]');
-    radios.forEach(r => r.disabled = true);
+  function checkAnswers() {
+    let score = 0;
+    const questions = document.querySelectorAll('.question');
 
-    if (selected) {
-      if (selected.value === answer) {
-        score++;
-        q.classList.add('border', 'border-green-500', 'rounded-md', 'p-4');
+    questions.forEach((q) => {
+      q.classList.remove('border', 'border-red-500', 'border-green-500', 'rounded-md', 'p-4');
+      const answer = q.getAttribute('data-answer');
+      const selected = q.querySelector('input[type="radio"]:checked');
+
+      const radios = q.querySelectorAll('input[type="radio"]');
+      radios.forEach(r => r.disabled = true);
+
+      if (selected) {
+        if (selected.value === answer) {
+          score++;
+          q.classList.add('border', 'border-green-500', 'rounded-md', 'p-4');
+        } else {
+          q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
+        }
       } else {
         q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
       }
-    } else {
-      q.classList.add('border', 'border-red-500', 'rounded-md', 'p-4');
-    }
 
-    // แสดงคำตอบที่ถูก (เพิ่มด้านล่างคำถาม)
-    const answerEl = document.createElement("p");
-    answerEl.className = "text-sm text-green-600 mt-1";
-    answerEl.innerText = `คำตอบที่ถูก: ${answer}`;
-    q.appendChild(answerEl);
-  });
+      const answerEl = document.createElement("p");
+      answerEl.className = "text-sm text-green-600 mt-1";
+      answerEl.innerText = `คำตอบที่ถูก: ${answer}`;
+      q.appendChild(answerEl);
+    });
 
-  // แสดงผลคะแนน
-  const date = new Date().toLocaleDateString('th-TH');
-  const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
+    const date = new Date().toLocaleDateString('th-TH');
+    const status = score >= 3 ? "ผ่าน" : "ไม่ผ่าน";
 
-  document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name}  ${studentData.lastName}`;
-  document.getElementById('modalTel').innerText = `เบอร์โทร: ${studentData.tel}`;
-  document.getElementById('modalScore').innerText = `คะแนน: ${score} / 5`;
-  document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
-  document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
+    document.getElementById('modalName').innerText = `ชื่อ: ${studentData.name}  ${studentData.lastName}`;
+    document.getElementById('modalTel').innerText = `เบอร์โทร: ${studentData.tel}`;
+    document.getElementById('modalScore').innerText = `คะแนน: ${score} / 5`;
+    document.getElementById('modalStatus').innerText = `สถานะ: ${status}`;
+    document.getElementById('modalDate').innerText = `วันที่สอบ: ${date}`;
 
-  // ซ่อนปุ่มส่ง & แสดงปุ่มย้อนกลับ
-  document.getElementById('submitBtn').classList.add('hidden');
-  document.getElementById('backBtn').classList.remove('hidden');
+    // ส่งข้อมูลไป Google Sheet
+    fetch("https://script.google.com/macros/s/AKfycbzP1XfER23199QjSaW1v1wviMzIIaE6l5Y93vo7hLc85-iG5clMIDbsPljc02YEZK4E/exec", {
+      method: "POST",
+      body: JSON.stringify({
+        name: studentData.name,
+        lastName: studentData.lastName,
+        tel: studentData.tel,
+        score: score,
+        status: status,
+        date: date
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => res.text())
+    .then(data => {
+      console.log("บันทึกลง Google Sheet สำเร็จ:", data);
+    })
+    .catch(err => {
+      console.error("เกิดข้อผิดพลาด:", err);
+    });
 
-  // เปิด modal ผลสอบ
-  document.getElementById('resultModal').classList.remove('hidden');
-}
-function closeResultModal() {
-  document.getElementById('resultModal').classList.add('hidden');
-}
-function goToHome() {
-  location.reload(); // รีหน้าเพื่อกลับไปหน้าแรก
-}
-  </script>
+    document.getElementById('submitBtn').classList.add('hidden');
+    document.getElementById('backBtn').classList.remove('hidden');
+    document.getElementById('resultModal').classList.remove('hidden');
+  }
+
+  function closeResultModal() {
+    document.getElementById('resultModal').classList.add('hidden');
+  }
+
+  function goToHome() {
+    location.reload();
+  }
+</script>
+  
+
+
 </body>
 </html>
