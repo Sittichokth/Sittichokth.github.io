@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>แดชบอร์ดผลการสอบ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-blue-50 min-h-screen text-gray-800">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-blue-700 mb-6">แดชบอร์ดผลการทำแบบทดสอบ</h1>
+    
+    <div class="overflow-x-auto bg-white rounded-lg shadow-lg">
+      <table class="min-w-full text-sm text-gray-700">
+        <thead class="bg-blue-200 text-blue-900">
+          <tr>
+            <th class="px-4 py-3 text-left">ชื่อ</th>
+            <th class="px-4 py-3 text-left">นามสกุล</th>
+            <th class="px-4 py-3 text-left">เบอร์โทร</th>
+            <th class="px-4 py-3 text-left">คะแนน</th>
+            <th class="px-4 py-3 text-left">สถานะ</th>
+            <th class="px-4 py-3 text-left">วันที่สอบ</th>
+          </tr>
+        </thead>
+        <tbody id="dashboardBody" class="divide-y divide-blue-100">
+          <!-- Data จะถูกเติมโดย JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDo7OnSjkvRMhXXKVZwQx7K46xu7UD84cs",
+      authDomain: "createby9jay.firebaseapp.com",
+      databaseURL: "https://createby9jay-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "createby9jay",
+      storageBucket: "createby9jay.appspot.com",
+      messagingSenderId: "1030838893241",
+      appId: "1:1030838893241:web:7d61055e099000c3273968",
+      measurementId: "G-45P0P2E0SQ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function loadDashboard() {
+      const tbody = document.getElementById('dashboardBody');
+      tbody.innerHTML = '';
+      db.ref('quiz-results').once('value', snapshot => {
+        const dataList = [];
+        snapshot.forEach(child => {
+          dataList.push(child.val());
+        });
+
+        dataList.reverse().forEach(data => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="px-4 py-2">${data.name}</td>
+            <td class="px-4 py-2">${data.lastName}</td>
+            <td class="px-4 py-2">${data.tel}</td>
+            <td class="px-4 py-2 font-semibold ${data.score >= 3 ? 'text-green-600' : 'text-red-500'}">${data.score}</td>
+            <td class="px-4 py-2">${data.status}</td>
+            <td class="px-4 py-2">${data.date}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      });
+    }
+
+    window.onload = loadDashboard;
+  </script>
+</body>
+</html>
